@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>유통기한 관리 달력</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style2.css" />
+</head>
+<body>
+  <h1><span class="emoji">🗓️</span> 유통기한 관리</h1>
+
+<form id="itemForm">
+  <input type="hidden" id="editIndex" value="-1" />
+
+<!-- 숨길 박스 -->
+<div id="inputBox" style="display:none; border: 1px solid #ccc; padding: 10px; margin-top: 10px; border-radius: 8px; background: #f9f9f9;">
+  <div class="input-row">
+    <select id="category" required>
+      <option value="" disabled selected>분류 선택</option>
+      <option value="카페">카페</option>
+      <option value="주방">주방</option>
+      <option value="음료">음료</option>
+      <option value="아이스크림">아이스크림</option>
+      <option value="아트">아트</option>
+      <option value="스넥">스넥</option>
+      <option value="운영물품">운영물품</option>
+      <option value="기타">기타</option>
+    </select>
+
+    <input type="text" id="name" placeholder="상품명" required />
+    <input type="number" id="qty" placeholder="수량" required min="1" style="width: 70px;" />
+    <select id="qtyUnit" required>
+      <option value="" disabled selected>단위</option>
+      <option value="EA">EA</option>
+      <option value="CT">CT</option>
+    </select>
+    <input type="date" id="expiry" required />
+    <input type="text" id="note" placeholder="비고" />
+    <button type="submit" id="submitBtn">추가</button>
+    <button type="button" id="cancelEditBtn" style="display:none;">취소</button>
+  </div>
+</form>
+
+<div style="display: flex; flex-direction: column; gap: 20px;">
+  <div class="csv-upload-wrapper" style="display: flex; align-items: center; gap: 10px;">
+    <input type="file" id="csvFileInput" style="display:none;" accept=".csv" />
+    <label for="csvFileInput" class="csv-file-label" style="cursor:pointer; font-size: 20px; user-select:none;">📁</label>
+    <span id="fileNameDisplay" class="csv-file-name" style="min-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">선택된 파일 없음</span>
+    <button id="uploadCsvBtn" class="btn-uploadCsvBtn" type="button" style="white-space: nowrap;">CSV 업로드</button>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+    <label for="exportStartDate" style="white-space: nowrap;">기간:</label>
+    <input type="date" id="exportStartDate" style="width: 130px;" />
+    <span style="white-space: nowrap;">~</span>
+    <input type="date" id="exportEndDate" style="width: 130px;" />
+    
+    <div id="presetPeriodButtons" style="display: flex; gap: 6px; flex-wrap: wrap;">
+      <button type="button" data-period="month" class="period-btn">당월</button>
+      <button type="button" data-period="week" class="period-btn">일주일</button>
+      <button type="button" data-period="1m" class="period-btn">1개월</button>
+      <button type="button" data-period="2m" class="period-btn">2개월</button>
+      <button type="button" data-period="3m" class="period-btn">3개월</button>
+      <button type="button" data-period="6m" class="period-btn">6개월</button>
+      <button type="button" data-period="1y" class="period-btn">1년</button>
+    </div>
+
+    <div class="right-group">
+      <button id="downloadTemplateBtn" class="btn-template" type="button">CSV 템플릿 다운로드</button>
+      <button id="exportCsvBtn" class="btn-export" type="button">CSV 내보내기</button>
+    </div>
+
+  </div>
+</div>
+
+</div> <!-- inputBox 끝 -->
+
+<script>
+  document.getElementById('toggleBoxBtn').addEventListener('click', function() {
+    const box = document.getElementById('inputBox');
+    box.style.display = (box.style.display === 'none' || box.style.display === '') ? 'block' : 'none';
+  });
+</script>
+
+
+
+
+  <div class="calendar-container">
+  <!-- 토글 버튼 -->
+  <button id="toggleBoxBtn" type="button">📂 개별추가</button>
+<h2>달력</h2>
+  <div class="right-controls">
+    <label for="yearSelector">연도:
+      <select id="yearSelector"></select>
+    </label>
+    <label for="monthSelector" style="margin-left:10px;">월:
+      <select id="monthSelector"></select>
+    </label>
+  </div>
+</div>
+
+
+  <div id="calendar" style="margin-top: 20px;"></div>
+
+  <!-- 상세보기 모달 -->
+  <div id="detailModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span id="closeModal" class="close">&times;</span>
+      <h3>상품 목록</h3>
+      <ul id="modalItemList"></ul>
+    </div>
+  </div>
+  
+  
+  <script src="script2.js"></script>
+</body>
+</html>
