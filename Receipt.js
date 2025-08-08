@@ -204,7 +204,7 @@
   });
 
   goExpiryPageBtn.addEventListener("click", () => {
-    window.open("../Expiration Date/index.html", "_blank");
+    window.open("Expiration Date.html", "_blank");
   });
 
   // 다른 탭에서 localStorage 변경 시 감지
