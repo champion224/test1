@@ -1,0 +1,698 @@
+body {
+  font-family: "Arial", sans-serif;
+  margin: 20px;
+  background-color: #f9f9f9;
+  color: #222;
+}
+
+/* 토글 버튼 */
+#toggleBoxBtn {
+  cursor: pointer;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  font-size: 14px;
+}
+
+/* ----- 모달 스타일: inputBox를 오버레이(팝업)로 보이게 함 ----- */
+/* inline style이 있어도 이걸로 덮어쓰기 위해 !important 사용 */
+#inputBox {
+  display: none !important; /* 처음엔 숨김 */
+  position: fixed !important; /* 페이지 흐름에 영향 주지 않음 */
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 880px;
+  max-width: calc(100% - 40px);
+  z-index: 1100 !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+  padding: 18px !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25) !important;
+  border: none !important;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 열린 상태일 때 */
+#inputBox.open {
+  display: block !important;
+  opacity: 1;
+  pointer-events: auto;
+  align-items: center; /* 수직 가운데 정렬 */
+  gap: 10px;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* 모달 내부 - 기존 .input-row 스타일 보완 */
+.input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* 우측 버튼 등 조절 */
+.right-buttons {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 반투명 오버레이(배경 흐리게) */
+#modalOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1050;
+}
+
+/* overlay 보일 때 */
+#modalOverlay.show {
+  display: block;
+}
+
+/* input 요소 스타일 통일 */
+.input-row select,
+.input-row input[type="text"],
+.input-row input[type="number"],
+.input-row input[type="date"] {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+/* 버튼 스타일 */
+.input-row button {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: none;
+  background: #0b79ff;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+#submitBtn {
+  padding: 8px 23px;
+  border-radius: 10px;
+  border: none;
+  background: #07499a;
+  color: white;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+/* 취소 버튼 작게 */
+#cancelEditBtn {
+  background: #e0e0e0;
+  color: #333;
+}
+
+/* CSV 업로드 라벨 이모지 큼직하게 */
+.csv-file-label {
+  font-size: 22px;
+  user-select: none;
+}
+
+/* 모달 내부 제목(필요 시) */
+#inputBox h3 {
+  margin-top: 0;
+}
+
+/* 오늘 날짜 배경색 및 스타일 */
+.day.today {
+  background-color: #ffffff; /* 하얀색 배경 (원하는 색으로 변경 가능) */
+  border-radius: 6px;
+  box-shadow: 0 0 6px rgba(4, 11, 86, 0.7);
+  font-weight: 700;
+}
+
+.calendar-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.calendar-container h2 {
+  flex: 1;
+  text-align: center; /* 가운데 정렬 */
+  margin: 0;
+}
+
+.right-controls {
+  position: absolute;
+  right: 0;
+  bottom: -10px;
+  display: flex;
+  gap: 10px;
+}
+
+.modal {
+  z-index: 2000;
+}
+.modal .modal-content {
+  background: white;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* 반응형: 작은 화면에서 넓이 줄이기 */
+@media (max-width: 640px) {
+  #inputBox {
+    width: calc(100% - 24px);
+    padding: 12px;
+  }
+  .input-row {
+    gap: 8px;
+  }
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap");
+
+h1 {
+  font-family: "Poppins", sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.15em;
+  margin-bottom: 25px;
+  position: relative;
+  user-select: none;
+  cursor: default;
+  background: linear-gradient(90deg, #0a022d, #2362c7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* 이모지 스타일 */
+h1 .emoji {
+  margin-right: -4px;
+  vertical-align: middle;
+  font-size: 2.2rem;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: initial !important;
+  color: initial !important;
+  filter: none !important;
+  user-select: text;
+}
+
+/* 밑줄 */
+h1::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 100%;
+  height: 3px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #251bd4, #073071);
+}
+
+/* hover 시 변화 없이 깔끔하게 유지 */
+h1:hover {
+  transform: none;
+  filter: none;
+}
+
+.calendar-container {
+  margin-top: -20px;
+  position: relative;
+  width: 100%;
+  padding-bottom: 40px; /* 아래 공간 확보 */
+}
+
+/* 달력 텍스트는 가운데 정렬 */
+.calendar-container h2 {
+  margin: 0;
+  font-family: "Arial", sans-serif;
+  font-weight: 700;
+  font-size: 1.8rem;
+  color: #1f2937;
+  user-select: none;
+  white-space: nowrap;
+  text-align: center;
+}
+
+h2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #333;
+  margin: 20px;
+  gap: 10px;
+  transform: translateX(-10px); /* 왼쪽으로 10px 이동 */
+}
+
+h2::before,
+h2::after {
+  content: "";
+  width: 20px; /* 선 길이 조절 */
+  height: 1px;
+  background: #ccc;
+}
+
+/* 연도/월은 아래로 내려서 오른쪽 끝 정렬 */
+.right-controls {
+  position: absolute;
+  right: 2px;
+  bottom: -10px;
+  display: flex;
+  gap: 10px;
+  user-select: text;
+}
+
+.right-controls label {
+  font-family: "Arial", sans-serif;
+  font-size: 1rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.right-controls select {
+  margin-left: 6px;
+  padding: 4px 8px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.right-controls select:hover,
+.right-controls select:focus {
+  border-color: #2362c7;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+input,
+button,
+select {
+  padding: 8px;
+  font-size: 14px;
+}
+
+#calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.day {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 5px 30px 5px 5px; /* 오른쪽 패딩을 버튼 너비 만큼 확보 */
+  overflow-x: hidden;
+  /* 기존 스타일 유지 */
+  height: 110px; /* 정확히 3줄 분량만 보이도록 고정 */
+  padding: 5px;
+  position: relative;
+  overflow-y: hidden; /* 기본은 숨김 */
+  font-size: 14px;
+}
+.day:hover {
+  overflow-y: auto; /* 마우스 올라가면 스크롤 보임 */
+}
+
+.expiry {
+  margin-top: 4px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background-color: #eee;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* white-space: nowrap;  <- 필요 시 유지 */
+  /* overflow: hidden;     <- 삭제해야 메뉴가 잘리지 않음 */
+  height: 22px; /* ✅ 각 상품 높이 제한 */
+  cursor: default;
+  position: relative;
+}
+
+.expiry.due-soon {
+  background-color: #ffcccc;
+  color: #a00;
+  font-weight: bold;
+}
+
+.expiry .name-text {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* 추가 */
+}
+
+.expiry .menu-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+  padding: 0 5px;
+  color: #00ff55;
+  position: relative;
+  z-index: 20;
+}
+
+.expiry .menu-btn:hover {
+  color: #0056b3;
+}
+
+.menu-button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.menu-popup {
+  position: absolute;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  padding: 4px 0;
+  width: 60px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.menu-popup button {
+  display: block;
+  width: 100%;
+  padding: 4px 6px;
+  border: none;
+  background: none;
+  text-align: center; /* ✅ 텍스트 가운데 정렬 */
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.menu-popup button:hover {
+  background-color: #f2f2f2;
+}
+
+button#exportCsvBtn {
+  margin-left: 10px;
+  padding: 8px 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 6px;
+  max-height: 80vh;
+  overflow-y: auto;
+  width: 300px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.select-container {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 12px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.select-container label {
+  font-weight: 600;
+  color: #333;
+  margin-right: 6px;
+  user-select: none;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+label[for="yearSelector"],
+label[for="monthSelector"] {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #39404a;
+  margin-right: 6px;
+  user-select: none;
+  letter-spacing: 0.05em;
+  vertical-align: middle;
+  display: inline-block;
+  transition: color 0.3s ease;
+}
+
+label[for="yearSelector"]:hover,
+label[for="monthSelector"]:hover {
+  color: #3b82f6;
+  cursor: default;
+}
+
+#yearSelector,
+#monthSelector {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background: linear-gradient(145deg, #f9f9f9, #e2e2e2);
+  border: none;
+  box-shadow:
+    3px 3px 6px #c9c9c9,
+    -3px -3px 6px #ffffff;
+  border-radius: 10px;
+  padding: 6px 32px 6px 12px;
+  font-size: 14px;
+  color: #444;
+  cursor: pointer;
+  min-width: 80px;
+  position: relative;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+#yearSelector,
+#monthSelector {
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%23666" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px 16px;
+}
+
+#yearSelector:hover,
+#monthSelector:hover {
+  box-shadow:
+    4px 4px 8px #bbb,
+    -4px -4px 8px #fff;
+  color: #222;
+}
+
+#yearSelector:focus,
+#monthSelector:focus {
+  outline: none;
+  box-shadow: 0 0 6px 2px #4a90e2;
+  color: #111;
+  background: linear-gradient(145deg, #dbe9ff, #a7c1ff);
+}
+
+#yearSelector option[disabled],
+#monthSelector option[disabled] {
+  color: #999;
+}
+
+.csv-upload-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border: 2px solid #0f5085; /* 파란색 테두리 */
+  border-radius: 8px;
+  background-color: #f0f8ff; /* 연한 하늘색 배경 */
+  max-width: 520px; /* 필요시 조절 */
+  box-sizing: border-box;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 20px; /* 위쪽 여백 추가 */
+}
+
+/* 파일선택 */
+.csv-file-label {
+  font-size: 20px; /* 이모지 크기 키움 */
+  line-height: 1;
+  cursor: pointer;
+  background: none; /* 유리 배경 제거 */
+  box-shadow: none; /* 그림자 제거 */
+  padding: 0; /* 내부 여백 제거 */
+  border: none;
+}
+
+.btn-upload {
+  cursor: pointer;
+  background: linear-gradient(135deg, #5a4ff3, #351ff6);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 12px;
+  user-select: none;
+  box-shadow: 0 4px 8px rgba(53, 31, 246, 0.4);
+  transition:
+    background 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.15s ease;
+  flex-shrink: 0;
+  vertical-align: middle; /* 인라인 요소들 가운데 정렬 시 */
+}
+
+.btn-upload:hover {
+  background: linear-gradient(135deg, #4731db, #220fba);
+  box-shadow: 0 6px 12px rgba(53, 31, 246, 0.6);
+  transform: translateY(-2px);
+}
+
+.btn-upload:active {
+  background: linear-gradient(135deg, #2c1fb0, #1a0e78);
+  box-shadow: 0 2px 6px rgba(53, 31, 246, 0.3);
+  transform: translateY(0);
+}
+
+.csv-file-input {
+  display: none;
+}
+
+.csv-file-name {
+  font-size: 13px;
+  display: inline-block;
+  width: 500px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 6px 10px;
+  border: 1.5px solid #273daa;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #fafafa;
+  user-select: none;
+  vertical-align: middle; /* 인라인 요소들 가운데 정렬 시 */
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.left-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.right-group {
+  margin-left: auto; /* 이게 오른쪽 끝으로 보내는 핵심 */
+  display: flex;
+  gap: 10px;
+}
+
+.btn-template {
+  background-color: #331ea0;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.btn-template:hover {
+  background-color: #f57c00;
+}
+
+.btn-export {
+  background-color: #331ea0;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.btn-export:hover {
+  background-color: #7b1fa2;
+}
+
+.period-btn {
+  padding: 4px 8px;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid #888;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  transition: background-color 0.2s;
+}
+.period-btn:hover {
+  background-color: #ddd;
+}
+.period-btn.active {
+  background-color: #448aff;
+  color: white;
+  border-color: #448aff;
+}
+
+.other-month {
+  opacity: 0.4; /* 전체적으로 연하게 */
+}
+
+.other-month strong {
+  color: #888 !important; /* 날짜 숫자 색도 연하게 */
+}

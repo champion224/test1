@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>관리자 메인</title>
+    <link rel="stylesheet" href="Dashboard.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar">
+        <h2>📁 메뉴</h2>
+        <ul>
+          <li onclick="loadPage('Receipt.html')">입고 등록</li>
+          <li onclick="loadPage('../OtherPage/index.html')">다른 메뉴</li>
+        </ul>
+      </div>
+
+      <div class="main-content">
+        <iframe id="mainFrame" src=""></iframe>
+      </div>
+    </div>
+
+    <!-- JS 연결 -->
+    <script src="Dashboard.js"></script>
+  </body>
+</html>
